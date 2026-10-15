@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Responsible &amp; Safe AI Systems WEEK-11</title>
+    <link rel="icon" href="favicon.ico">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: system-ui, -apple-system, sans-serif;
+        }
+
+        body {
+            background-color: #f5f5f5;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #333;
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .question-card {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            border: 1px solid #e5e5e5;
+        }
+
+        .question-text {
+            font-weight: 600;
+            margin-bottom: 16px;
+            color: #333;
+        }
+
+        .question-image {
+            display: block;
+            max-width: 100%;
+            height: auto;
+            margin: 16px auto;
+            border-radius: 8px;
+        }
+
+        .options-container {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            width: 100%;
+        }
+
+        .option {
+            color: #333333;
+            background-color: #ffffff;
+            padding: 12px;
+            border: 1px solid #e5e5e5;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            min-height: 50px;
+            line-height: 1.4;
+        }
+
+        .option:hover {
+            background-color: #f8f8f8;
+        }
+
+        .option-label {
+            color: #333333;
+            font-size: 16px;
+            line-height: 1.5;
+            overflow-wrap: anywhere;
+            display: block;
+            flex: 1;
+            margin: 0;
+            padding: 0;
+        }
+
+        .option.selected {
+            border-color: #3b82f6;
+        }
+
+        .option.correct {
+            background-color: #ecfdf5;
+        }
+
+        .option.wrong {
+            background-color: #fef2f2;
+        }
+
+        .option input[type="radio"],
+        .option input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+            margin: 0 12px 0 0;
+            padding: 0;
+            flex: 0 0 16px;
+            vertical-align: middle;
+        }
+
+        .feedback {
+            margin-top: 16px;
+            padding-top: 16px;
+            border-top: 1px solid #e5e5e5;
+            display: none;
+        }
+
+        .feedback.visible {
+            display: block;
+        }
+
+        .result-icon {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+
+        .result-icon.correct {
+            color: #059669;
+        }
+
+        .result-icon.wrong {
+            color: #dc2626;
+        }
+
+        .correct-answer {
+            margin-top: 10px;
+            padding: 10px 12px;
+            background: #f0fdf4;
+            border-left: 4px solid #059669;
+            border-radius: 6px;
+            color: #166534;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 24px;
+        }
+
+        .score {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .button {
+            background-color: #3b82f6;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.2s;
+        }
+
+        .button:hover {
+            background-color: #2563eb;
+        }
+
+        @media (max-width: 640px) {
+            .container {
+                padding: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>WEEK-11 (Responsible &amp; Safe AI Systems)</h1>
+        <div id="quiz-container"></div>
+        <div class="controls">
+            <div id="score" class="score"></div>
+            <button id="submit-btn" class="button">Submit Answers</button>
+        </div>
+    </div>
+
+    <script>
+const questions = [
+  {
+    "id": 1,
+    "question": "In the context of data privacy, which right requires companies to delete user data when requested?",
+    "options": [
+      "Right to intellectual property retention",
+      "Right to be forgotten",
+      "Right to data portability",
+      "Right to transparency"
+    ],
+    "correctAnswer": 1,
+    "explanation": "AI Governance [9:56-11:50] - The right to be forgotten (or the right to erasure) gives the data subject the right to erasure of their personal data.",
+    "type": "single"
+  },
+  {
+    "id": 2,
+    "question": "Which OECD AI Principle states that AI systems should operate safely and function properly under normal use, misuse, or adverse conditions?",
+    "options": [
+      "Inclusive growth, sustainable development and well-being",
+      "Transparency and explainability",
+      "Robustness, security, and safety",
+      "Accountability"
+    ],
+    "correctAnswer": 3,
+    "explanation": "AI Governance [18:12-19:00] - Robustness, Security, and Safety states that AI systems should be robust, secure, and safe throughout their entire lifecycle.",
+    "type": "single"
+  },
+  {
+    "id": 3,
+    "question": "Under the EU AI Act, which application category is classified as an 'unacceptable risk'? (Select all that apply.)",
+    "options": [
+      "Social Scoring Systems",
+      "Critical Infrastructure Management",
+      "Law Enforcement",
+      "Cognitive Behavioural Manipulation"
+    ],
+    "correctAnswer": [
+      0,
+      3
+    ],
+    "explanation": "AI Governance [25:22-26:56] - According to the EU AI Act, social scoring and cognitive behavioural manipulation are unacceptable risks.",
+    "type": "multi"
+  },
+  {
+    "id": 4,
+    "question": "When a system like an email spam server filters out malicious messages in the background without requiring user intervention, which type of threat mitigation is it demonstrating?",
+    "options": [
+      "Educating and training users",
+      "Providing interface-level threat warnings",
+      "Silently eliminating the threat",
+      "Enforcing legal regulations"
+    ],
+    "correctAnswer": 2,
+    "explanation": "AI Governance [4:41-8:17] - Spam servers operate behind the scenes to remove unwanted or dangerous emails automatically.",
+    "type": "single"
+  },
+  {
+    "id": 5,
+    "question": "What specific transparency requirement does the EU AI Act impose on deepfakes or generated media?",
+    "options": [
+      "They must be exclusively hosted on European-based servers.",
+      "They must be clearly labeled as AI-generated.",
+      "They must not be published on the internet at all.",
+      "They must be heavily taxed before distribution."
+    ],
+    "correctAnswer": 1,
+    "explanation": "AI Governance [28:00-29:35] - The act mandates that any images, audio, or video files generated or modified by AI must be explicitly labeled.",
+    "type": "single"
+  },
+  {
+    "id": 6,
+    "question": "In the AI Value Chain, who is considered the \"deployer\"?",
+    "options": [
+      "The person or organization that uses the AI systems under its own authority.",
+      "The original engineering team that built the AI model.",
+      "The individual who imports the AI system into the EU market.",
+      "The government official responsible for writing the regulations."
+    ],
+    "correctAnswer": 0,
+    "explanation": "AI Governance [30:12-31:55]: The deployer is the persons that use AI systems under their authority.",
+    "type": "single"
+  },
+  {
+    "id": 7,
+    "question": "To satisfy the OECD principle of \"accountability,\" AI actors should ensure \"traceability\" throughout the system's lifecycle. What does this specifically help achieve?",
+    "options": [
+      "It allows companies to track user information that can lead to their location, such as IP addresses.",
+      "It ensures one can trace back how data was collected and how it influences decision-making.",
+      "It guarantees the system uses minimal computing power and has a low carbon footprint.",
+      "It allows the AI to completely wipe its training period after a set period."
+    ],
+    "correctAnswer": 1,
+    "explanation": "AI Governance [19:02-19:53]: Traceability ensures that if an AI makes a particular choice, auditors can trace the datasets and processes that led to that specific outcome.",
+    "type": "single"
+  },
+  {
+    "id": 8,
+    "question": "In the SaGE framework, how is semantic inconsistency functionally defined?",
+    "options": [
+      "Failing to identify commonsense reasoning violations within a single prompt.",
+      "Generating factually incorrect statements in response to a factual prompt.",
+      "Utilizing grammatically disparate structures to answer identical prompts.",
+      "Providing semantically disparate answers to semantically equivalent prompts."
+    ],
+    "correctAnswer": 3,
+    "explanation": "Research Overview: SaGE- Quantifying moral consistency in LLMs [2:27-2:52] - Semantic inconsistency is an LLM generating contradictory or different answers when presented with semantically equivalent prompts.",
+    "type": "single"
+  },
+  {
+    "id": 9,
+    "question": "In the SaGE framework, what does a higher semantic graph entropy indicate about the LLM?",
+    "options": [
+      "The model is exhibiting higher semantic consistency.",
+      "The model is exhibiting higher semantic inconsistency.",
+      "The model is exhibiting lower syntactic divergence.",
+      "The model is exhibiting lower fundamental judgment."
+    ],
+    "correctAnswer": 1,
+    "explanation": "Research Overview: SaGE- Quantifying moral consistency in LLMs [15:32-18:43]: Higher graph entropy indicates greater randomness among the generated responses, which means the model's answers are inconsistent.",
+    "type": "single"
+  },
+  {
+    "id": 10,
+    "question": "A developer attempts to reduce an LLM's tendency to give contradictory answers to moral questions by lowering the generation temperature. Based on SaGE, what is the expected outcome?",
+    "options": [
+      "The consistency score will improve to near perfection.",
+      "The consistency score will perfectly match human scores.",
+      "The consistency score will drop to near zero.",
+      "The consistency score will remain largely unaffected."
+    ],
+    "correctAnswer": 3,
+    "explanation": "Research Overview: SaGE- Quantifying moral consistency in LLMs [21:52-22:44]: The SaGE study demonstrated that changing the temperature does not significantly alter the model’s consistency.",
+    "type": "single"
+  },
+  {
+    "id": 11,
+    "question": "According to the SaGE framework, how does an LLM's accuracy on standard commonsense reasoning benchmarks correlate with its moral consistency?",
+    "options": [
+      "Accuracy negatively correlates with consistency.",
+      "Accuracy does not correlate with consistency.",
+      "Accuracy strictly correlates with consistency.",
+      "Accuracy conditionally correlates with consistency."
+    ],
+    "correctAnswer": 1,
+    "explanation": "Research Overview: SaGE- Quantifying moral consistency in LLMs [22:45-23:58]: The SaGE study demonstrated that a model's benchmark accuracy does not correlate with its consistency at all.",
+    "type": "single"
+  }
+];
+
+let selectedAnswers = {};
+let submitted = false;
+
+function createQuiz() {
+    const quizContainer = document.getElementById('quiz-container');
+
+    questions.forEach(question => {
+        const questionCard = document.createElement('div');
+        questionCard.className = 'question-card';
+
+        const isMultiSelect = Array.isArray(question.correctAnswer);
+
+        questionCard.innerHTML = `
+            <div class="question-text">Q${question.id}. ${question.question}</div>
+            ${question.image ? `<img src="${question.image}" alt="Image for question ${question.id}" class="question-image">` : ''}
+            ${question.type === 'numeric' ? `
+                <div class="options-container">
+                    <input class="numeric-answer" type="number" id="numeric-${question.id}" placeholder="Enter your numerical answer" style="width:100%; padding:12px; border:1px solid #e5e5e5; border-radius:8px; font-size:16px;">
+                </div>
+            ` : `<div class="options-container">
+                ${question.options.map((option, index) => `
+                    <label class="option" data-question="${question.id}" data-option="${index}">
+                        ${isMultiSelect
+                            ? `<input class="answer-control" type="checkbox" name="question${question.id}" value="${index}">`
+                            : `<input class="answer-control" type="radio" name="question${question.id}" value="${index}">`
+                        }
+                        <span class="option-label">${option}</span>
+                    </label>
+                `).join('')}
+            </div>`}
+
+            <div class="feedback" id="feedback-${question.id}">
+                <div class="result-icon">
+                    <span class="icon"></span>
+                    <span class="result-text"></span>
+                </div>
+
+                <div class="correct-answer">
+                    Correct Answer: ${question.explanation}
+                </div>
+            </div>
+        `;
+
+        quizContainer.appendChild(questionCard);
+    });
+
+    document.querySelectorAll('.option').forEach(option => {
+        option.addEventListener('click', handleOptionSelect);
+    });
+
+    document.getElementById('submit-btn').addEventListener('click', handleSubmit);
+
+    questions.filter(question => question.type === 'numeric').forEach(question => {
+        const numericInput = document.getElementById(`numeric-${question.id}`);
+        numericInput.addEventListener('input', () => {
+            if (!submitted && numericInput.value.trim() !== '') {
+                selectedAnswers[question.id] = numericInput.value.trim();
+            } else {
+                delete selectedAnswers[question.id];
+            }
+        });
+    });
+}
+
+function handleOptionSelect(event) {
+    if (submitted) return;
+
+    const questionId = parseInt(event.currentTarget.dataset.question);
+    const optionIndex = parseInt(event.currentTarget.dataset.option);
+    const question = questions.find(q => q.id === questionId);
+    const isMultiSelect = Array.isArray(question.correctAnswer);
+
+    if (isMultiSelect) {
+        if (!selectedAnswers[questionId]) {
+            selectedAnswers[questionId] = [];
+        }
+
+        const checkbox = event.currentTarget.querySelector('input[type="checkbox"]');
+
+        if (checkbox.checked) {
+            if (!selectedAnswers[questionId].includes(optionIndex)) {
+                selectedAnswers[questionId].push(optionIndex);
+            }
+
+            event.currentTarget.classList.add('selected');
+        } else {
+            selectedAnswers[questionId] = selectedAnswers[questionId].filter(i => i !== optionIndex);
+            event.currentTarget.classList.remove('selected');
+        }
+
+        if (selectedAnswers[questionId].length === 0) {
+            delete selectedAnswers[questionId];
+        }
+    } else {
+        selectedAnswers[questionId] = optionIndex;
+
+        const questionOptions = document.querySelectorAll(
+            `.option[data-question="${questionId}"]`
+        );
+
+        questionOptions.forEach(option => {
+            option.classList.remove('selected');
+        });
+
+        event.currentTarget.classList.add('selected');
+
+        event.currentTarget.querySelector('input[type="radio"]').checked = true;
+    }
+}
+
+function handleSubmit() {
+    if (Object.keys(selectedAnswers).length < questions.length) {
+        alert("Please answer all questions before submitting!");
+        return;
+    }
+
+    submitted = true;
+    let score = 0;
+
+    questions.forEach(question => {
+        let isCorrect;
+
+        if (question.type === 'numeric') {
+            isCorrect = Number(selectedAnswers[question.id]) === question.correctAnswer;
+        } else if (Array.isArray(question.correctAnswer)) {
+            const selected = selectedAnswers[question.id] || [];
+            const expected = [...question.correctAnswer].sort((a, b) => a - b);
+            const actual = [...selected].sort((a, b) => a - b);
+
+            isCorrect =
+                expected.length === actual.length &&
+                expected.every((value, index) => value === actual[index]);
+        } else {
+            isCorrect =
+                selectedAnswers[question.id] === question.correctAnswer;
+        }
+
+        if (isCorrect) {
+            score++;
+        }
+
+        const feedback = document.getElementById(`feedback-${question.id}`);
+        feedback.classList.add('visible');
+
+        const resultIcon = feedback.querySelector('.result-icon');
+        const resultText = feedback.querySelector('.result-text');
+
+        if (isCorrect) {
+            resultIcon.classList.add('correct');
+            resultText.textContent = 'Correct Answer +1';
+        } else {
+            resultIcon.classList.add('wrong');
+            resultText.textContent = 'Wrong Answer +0';
+        }
+
+        const options = document.querySelectorAll(
+            `.option[data-question="${question.id}"]`
+        );
+
+        if (question.type === 'numeric') {
+            const numericInput = document.getElementById(`numeric-${question.id}`);
+            numericInput.disabled = true;
+            numericInput.style.borderColor = isCorrect ? '#059669' : '#dc2626';
+        }
+
+        options.forEach((option, index) => {
+            const correct = Array.isArray(question.correctAnswer)
+                ? question.correctAnswer.includes(index)
+                : index === question.correctAnswer;
+
+            const selected = Array.isArray(question.correctAnswer)
+                ? (selectedAnswers[question.id] || []).includes(index)
+                : index === selectedAnswers[question.id];
+
+            if (correct) {
+                option.classList.add('correct');
+            } else if (selected) {
+                option.classList.add('wrong');
+            }
+        });
+    });
+
+    document.getElementById('score').textContent =
+        `Score: ${score}/${questions.length}`;
+
+    const submitBtn = document.getElementById('submit-btn');
+
+    submitBtn.textContent = 'Try Again';
+
+    submitBtn.removeEventListener('click', handleSubmit);
+    submitBtn.addEventListener('click', resetQuiz);
+}
+
+function resetQuiz() {
+    location.reload();
+}
+
+createQuiz();
+    </script>
+</body>
+</html>
